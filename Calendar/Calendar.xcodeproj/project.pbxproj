@@ -15,6 +15,8 @@
 		F8B918A222C6485C0030A28A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = F8B918A122C6485C0030A28A /* main.m */; };
 		F8B918AC22C6485D0030A28A /* CalendarTests.m in Sources */ = {isa = PBXBuildFile; fileRef = F8B918AB22C6485D0030A28A /* CalendarTests.m */; };
 		F8B918B722C6485D0030A28A /* CalendarUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = F8B918B622C6485D0030A28A /* CalendarUITests.m */; };
+		F8B918C622C692190030A28A /* DayCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = F8B918C522C692190030A28A /* DayCollectionViewCell.m */; };
+		F8B918C922C6A6BD0030A28A /* UIColor+extensions.m in Sources */ = {isa = PBXBuildFile; fileRef = F8B918C822C6A6BD0030A28A /* UIColor+extensions.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -51,6 +53,10 @@
 		F8B918B222C6485D0030A28A /* CalendarUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CalendarUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F8B918B622C6485D0030A28A /* CalendarUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CalendarUITests.m; sourceTree = "<group>"; };
 		F8B918B822C6485D0030A28A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		F8B918C422C692190030A28A /* DayCollectionViewCell.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DayCollectionViewCell.h; sourceTree = "<group>"; };
+		F8B918C522C692190030A28A /* DayCollectionViewCell.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DayCollectionViewCell.m; sourceTree = "<group>"; };
+		F8B918C722C6A6BD0030A28A /* UIColor+extensions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIColor+extensions.h"; sourceTree = "<group>"; };
+		F8B918C822C6A6BD0030A28A /* UIColor+extensions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UIColor+extensions.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -109,7 +115,11 @@
 				F8B9189B22C6485C0030A28A /* Assets.xcassets */,
 				F8B9189D22C6485C0030A28A /* LaunchScreen.storyboard */,
 				F8B918A022C6485C0030A28A /* Info.plist */,
+				F8B918C422C692190030A28A /* DayCollectionViewCell.h */,
+				F8B918C522C692190030A28A /* DayCollectionViewCell.m */,
 				F8B918A122C6485C0030A28A /* main.m */,
+				F8B918C722C6A6BD0030A28A /* UIColor+extensions.h */,
+				F8B918C822C6A6BD0030A28A /* UIColor+extensions.m */,
 			);
 			path = Calendar;
 			sourceTree = "<group>";
@@ -262,9 +272,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F8B918C922C6A6BD0030A28A /* UIColor+extensions.m in Sources */,
 				F8B9189722C6485A0030A28A /* ViewController.m in Sources */,
 				F8B918A222C6485C0030A28A /* main.m in Sources */,
 				F8B9189422C6485A0030A28A /* AppDelegate.m in Sources */,
+				F8B918C622C692190030A28A /* DayCollectionViewCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

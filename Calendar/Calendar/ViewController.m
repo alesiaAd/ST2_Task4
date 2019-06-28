@@ -8,11 +8,14 @@
 
 #import <EventKit/EventKit.h>
 #import "ViewController.h"
+#import "DayCollectionViewCell.h"
+#import "UIColor+extensions.h"
 
-@interface ViewController ()
+@interface ViewController () <UICollectionViewDelegate, UICollectionViewDataSource>
 
 @property (strong, nonatomic) EKEventStore *eventStore;
 @property (nonatomic) BOOL isAccessToEventStoreGranted;
+@property (strong, nonatomic) UICollectionView *selectDayCollectionView;
 
 @end
 
@@ -24,6 +27,26 @@
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
     [dateFormatter setDateFormat:@"d MMMM yyyy"];
     self.title = [dateFormatter stringFromDate:[NSDate date]];
+    
+    UICollectionViewFlowLayout *collectionViewFlowLayout = [[UICollectionViewFlowLayout alloc] init];
+    self.selectDayCollectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:collectionViewFlowLayout];
+    self.selectDayCollectionView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.view addSubview:self.selectDayCollectionView];
+    [collectionViewFlowLayout setScrollDirection:UICollectionViewScrollDirectionHorizontal];
+    self.selectDayCollectionView.collectionViewLayout = collectionViewFlowLayout;
+    self.selectDayCollectionView.backgroundColor = [UIColor blueDark];
+    
+    [NSLayoutConstraint activateConstraints:@[
+                                              [self.selectDayCollectionView.leadingAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor],
+                                              [self.selectDayCollectionView.trailingAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor],
+                                              [self.selectDayCollectionView.topAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor],
+                                              [self.selectDayCollectionView.heightAnchor constraintEqualToConstant:60]
+                                              ]
+     ];
+    self.selectDayCollectionView.delegate = self;
+    self.selectDayCollectionView.dataSource = self;
+    
+    [self.selectDayCollectionView registerClass:[DayCollectionViewCell class] forCellWithReuseIdentifier:@"DayCollectionViewCell"];
     
     [self updateAuthorizationStatusToAccessEventStore];
     
@@ -83,6 +106,31 @@
             break;
         }
     }
+}
+
+
+- (nonnull __kindof UICollectionViewCell *)collectionView:(nonnull UICollectionView *)collectionView cellForItemAtIndexPath:(nonnull NSIndexPath *)indexPath {
+    static NSString *cellIdentifier = @"DayCollectionViewCell";
+    DayCollectionViewCell *cell = (DayCollectionViewCell *) [collectionView dequeueReusableCellWithReuseIdentifier:cellIdentifier forIndexPath:indexPath];
+    cell.dayLabel.text = [NSString stringWithFormat:@"%ld", (long)indexPath.item];
+    cell.weekDaylabel.text = @"BT";
+    return cell;
+}
+
+- (NSInteger)collectionView:(nonnull UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
+    return 50;
+}
+
+- (CGSize)collectionView:(UICollectionView *)collectionView
+                  layout:(UICollectionViewLayout *)collectionViewLayout
+  sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
+    return CGSizeMake(50, 50);
+}
+
+- (CGFloat)collectionView:(UICollectionView *)collectionView
+                   layout:(UICollectionViewLayout *)collectionViewLayout
+minimumInteritemSpacingForSectionAtIndex:(NSInteger)section {
+    return 5;
 }
 
 
