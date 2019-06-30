@@ -10,6 +10,7 @@
 		F82DB3AC22C74FCC00163F9D /* DateEventsModel.m in Sources */ = {isa = PBXBuildFile; fileRef = F82DB3AB22C74FCC00163F9D /* DateEventsModel.m */; };
 		F82DB3AF22C8B8F400163F9D /* DayEventViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F82DB3AE22C8B8F400163F9D /* DayEventViewManager.m */; };
 		F82DB3B222C8DE8E00163F9D /* DayEventsLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F82DB3B122C8DE8E00163F9D /* DayEventsLayout.m */; };
+		F82DB3B522C8E31A00163F9D /* GridLine.m in Sources */ = {isa = PBXBuildFile; fileRef = F82DB3B422C8E31A00163F9D /* GridLine.m */; };
 		F8B9189422C6485A0030A28A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F8B9189322C6485A0030A28A /* AppDelegate.m */; };
 		F8B9189722C6485A0030A28A /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F8B9189622C6485A0030A28A /* ViewController.m */; };
 		F8B9189A22C6485A0030A28A /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F8B9189822C6485A0030A28A /* Main.storyboard */; };
@@ -46,6 +47,8 @@
 		F82DB3AE22C8B8F400163F9D /* DayEventViewManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DayEventViewManager.m; sourceTree = "<group>"; };
 		F82DB3B022C8DE8E00163F9D /* DayEventsLayout.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DayEventsLayout.h; sourceTree = "<group>"; };
 		F82DB3B122C8DE8E00163F9D /* DayEventsLayout.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DayEventsLayout.m; sourceTree = "<group>"; };
+		F82DB3B322C8E31A00163F9D /* GridLine.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GridLine.h; sourceTree = "<group>"; };
+		F82DB3B422C8E31A00163F9D /* GridLine.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GridLine.m; sourceTree = "<group>"; };
 		F8B9188F22C6485A0030A28A /* Calendar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Calendar.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F8B9189222C6485A0030A28A /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		F8B9189322C6485A0030A28A /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -93,6 +96,19 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		F82DB3B622C8EC4C00163F9D /* Day Events */ = {
+			isa = PBXGroup;
+			children = (
+				F82DB3AD22C8B8F400163F9D /* DayEventViewManager.h */,
+				F82DB3AE22C8B8F400163F9D /* DayEventViewManager.m */,
+				F82DB3B022C8DE8E00163F9D /* DayEventsLayout.h */,
+				F82DB3B122C8DE8E00163F9D /* DayEventsLayout.m */,
+				F82DB3B322C8E31A00163F9D /* GridLine.h */,
+				F82DB3B422C8E31A00163F9D /* GridLine.m */,
+			);
+			path = "Day Events";
+			sourceTree = "<group>";
+		};
 		F8B9188622C648590030A28A = {
 			isa = PBXGroup;
 			children = (
@@ -131,10 +147,7 @@
 				F8B918C822C6A6BD0030A28A /* UIColor+extensions.m */,
 				F82DB3AA22C74FCC00163F9D /* DateEventsModel.h */,
 				F82DB3AB22C74FCC00163F9D /* DateEventsModel.m */,
-				F82DB3AD22C8B8F400163F9D /* DayEventViewManager.h */,
-				F82DB3AE22C8B8F400163F9D /* DayEventViewManager.m */,
-				F82DB3B022C8DE8E00163F9D /* DayEventsLayout.h */,
-				F82DB3B122C8DE8E00163F9D /* DayEventsLayout.m */,
+				F82DB3B622C8EC4C00163F9D /* Day Events */,
 			);
 			path = Calendar;
 			sourceTree = "<group>";
@@ -293,6 +306,7 @@
 				F82DB3AF22C8B8F400163F9D /* DayEventViewManager.m in Sources */,
 				F8B9189422C6485A0030A28A /* AppDelegate.m in Sources */,
 				F82DB3B222C8DE8E00163F9D /* DayEventsLayout.m in Sources */,
+				F82DB3B522C8E31A00163F9D /* GridLine.m in Sources */,
 				F82DB3AC22C74FCC00163F9D /* DateEventsModel.m in Sources */,
 				F8B918C622C692190030A28A /* DayCollectionViewCell.m in Sources */,
 			);

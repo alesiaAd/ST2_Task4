@@ -13,6 +13,7 @@
 #import "DateEventsModel.h"
 #import "DayEventViewManager.h"
 #import "DayEventsLayout.h"
+#import "GridLine.h"
 
 @interface ViewController () <UICollectionViewDelegate, UICollectionViewDataSource>
 
@@ -45,7 +46,9 @@
     self.selectDayCollectionView.backgroundColor = [UIColor blueDark];
     [self.selectDayCollectionView setPagingEnabled:YES];
     
-    self.dayEventsCollectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:[DayEventsLayout new]];
+    DayEventsLayout * dayEventsLayout = [DayEventsLayout new];
+    [dayEventsLayout registerClass:GridLine.class forDecorationViewOfKind:NSStringFromClass(GridLine.class)];
+    self.dayEventsCollectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:dayEventsLayout];
     self.dayEventsCollectionView.translatesAutoresizingMaskIntoConstraints = NO;
     [self.view addSubview:self.dayEventsCollectionView];
     self.dayEventsCollectionView.backgroundColor = [UIColor whiteColor];
