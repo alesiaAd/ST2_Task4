@@ -12,5 +12,6 @@
 
 @property (strong, nonatomic) UILabel *dayLabel;
 @property (strong, nonatomic) UILabel *weekDaylabel;
+@property (strong, nonatomic) UIView *dotView;
 
 @end

@@ -66,6 +66,23 @@
                                                   [self.weekDaylabel.topAnchor constraintEqualToAnchor:self.dayLabel.bottomAnchor],
                                                   ]
          ];
+        
+        const CGFloat dotViewDiameter = 5.0;
+        self.dotView = [UIView new];
+        self.dotView.translatesAutoresizingMaskIntoConstraints = NO;
+        self.dotView.backgroundColor = [UIColor whiteColor];
+        [self.contentView addSubview:self.dotView];
+        
+        [NSLayoutConstraint activateConstraints:@[
+                                                  [self.dotView.bottomAnchor constraintEqualToAnchor:self.contentView.bottomAnchor],
+                                                  [self.dotView.centerXAnchor constraintEqualToAnchor:self.contentView.centerXAnchor],
+                                                  [self.dotView.heightAnchor constraintEqualToConstant:dotViewDiameter],
+                                                  [self.dotView.widthAnchor constraintEqualToConstant:dotViewDiameter]
+                                                  ]
+         ];
+        
+        self.dotView.layer.cornerRadius = dotViewDiameter / 2;
+        self.dotView.layer.masksToBounds = YES;
     }
     return self;
 }

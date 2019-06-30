@@ -10,12 +10,14 @@
 #import "ViewController.h"
 #import "DayCollectionViewCell.h"
 #import "UIColor+extensions.h"
+#import "DateEventsModel.h"
 
 @interface ViewController () <UICollectionViewDelegate, UICollectionViewDataSource>
 
 @property (strong, nonatomic) EKEventStore *eventStore;
 @property (nonatomic) BOOL isAccessToEventStoreGranted;
 @property (strong, nonatomic) UICollectionView *selectDayCollectionView;
+@property (strong, nonatomic) NSMutableArray <DateEventsModel *> *dateEventsModelsArray;
 
 @end
 
@@ -25,6 +27,7 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setLocale: [NSLocale localeWithLocaleIdentifier:[[NSLocale preferredLanguages] objectAtIndex:0]]];
     [dateFormatter setDateFormat:@"d MMMM yyyy"];
     self.title = [dateFormatter stringFromDate:[NSDate date]];
     
@@ -35,6 +38,7 @@
     [collectionViewFlowLayout setScrollDirection:UICollectionViewScrollDirectionHorizontal];
     self.selectDayCollectionView.collectionViewLayout = collectionViewFlowLayout;
     self.selectDayCollectionView.backgroundColor = [UIColor blueDark];
+    [self.selectDayCollectionView setPagingEnabled:YES];
     
     [NSLayoutConstraint activateConstraints:@[
                                               [self.selectDayCollectionView.leadingAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor],
@@ -48,6 +52,8 @@
     
     [self.selectDayCollectionView registerClass:[DayCollectionViewCell class] forCellWithReuseIdentifier:@"DayCollectionViewCell"];
     
+    self.dateEventsModelsArray = [NSMutableArray new];
+    
     [self updateAuthorizationStatusToAccessEventStore];
     
 }
@@ -58,26 +64,39 @@
     return array;
 }
 
-- (void)fetchCalendarEventForEndOfDay {
-    NSDateComponents *components = [[NSCalendar currentCalendar] components: NSCalendarUnitSecond | NSCalendarUnitMinute | NSCalendarUnitDay | NSCalendarUnitHour | NSCalendarUnitMonth | NSCalendarUnitYear | NSCalendarUnitWeekday fromDate:[NSDate date]];
+- (NSArray *)fetchCalendarEventForOneDay:(NSDate *)date {
+    NSDateComponents *components = [[NSCalendar currentCalendar] components: NSCalendarUnitSecond | NSCalendarUnitMinute | NSCalendarUnitDay | NSCalendarUnitHour | NSCalendarUnitMonth | NSCalendarUnitYear | NSCalendarUnitWeekday fromDate:date];
     [components setHour:23];
     [components setMinute:59];
     [components setSecond:59];
-    NSArray *eventArray = [self fetchCalendarEventsFromDate:[NSDate date] toDate:[[NSCalendar currentCalendar] dateFromComponents:components]];
+    NSArray *eventArray = [self fetchCalendarEventsFromDate:date toDate:[[NSCalendar currentCalendar] dateFromComponents:components]];
+    return eventArray;
 }
 
-- (void)fetchCalendarEventsForWeek {
-    NSDateComponents *componentsStartWeek = [[NSCalendar currentCalendar] components: NSCalendarUnitSecond | NSCalendarUnitMinute | NSCalendarUnitDay | NSCalendarUnitHour | NSCalendarUnitMonth | NSCalendarUnitYear | NSCalendarUnitWeekday fromDate:[NSDate date]];
-    [componentsStartWeek setDay:componentsStartWeek.day - componentsStartWeek.weekday + 2];
-    [componentsStartWeek setHour:0];
-    [componentsStartWeek setMinute:0];
-    [componentsStartWeek setSecond:0];
-    NSDateComponents *componentsEndWeek = [[NSCalendar currentCalendar] components: NSCalendarUnitSecond | NSCalendarUnitMinute | NSCalendarUnitDay | NSCalendarUnitHour | NSCalendarUnitMonth | NSCalendarUnitYear | NSCalendarUnitWeekday fromDate:[NSDate date]];
-    [componentsEndWeek setDay:componentsEndWeek.day + (7 - componentsEndWeek.weekday) + 1];
-    [componentsEndWeek setHour:23];
-    [componentsEndWeek setMinute:59];
-    [componentsEndWeek setSecond:59];
-    NSArray *eventArray = [self fetchCalendarEventsFromDate:[[NSCalendar currentCalendar] dateFromComponents:componentsStartWeek] toDate:[[NSCalendar currentCalendar] dateFromComponents:componentsEndWeek]];
+- (void)fetchCalendarEvents:(NSDate *)date weeksAmount:(NSUInteger)amount {
+    NSCalendar *calendar = [NSCalendar currentCalendar];
+    [calendar setLocale:[NSLocale localeWithLocaleIdentifier:[[NSLocale preferredLanguages] objectAtIndex:0]]];
+    NSDateComponents *componentsStart = [calendar components: NSCalendarUnitSecond | NSCalendarUnitMinute | NSCalendarUnitDay | NSCalendarUnitHour | NSCalendarUnitMonth | NSCalendarUnitYear | NSCalendarUnitWeekday fromDate:date];
+    NSInteger weekDayAsNumber = [componentsStart weekday];
+    weekDayAsNumber = ((weekDayAsNumber + 5) % 7) + 1;
+    [componentsStart setDay:componentsStart.day - weekDayAsNumber + 1];
+    [componentsStart setHour:0];
+    [componentsStart setMinute:0];
+    [componentsStart setSecond:0];
+    NSDateComponents *componentsEnd = [calendar components: NSCalendarUnitSecond | NSCalendarUnitMinute | NSCalendarUnitDay | NSCalendarUnitHour | NSCalendarUnitMonth | NSCalendarUnitYear | NSCalendarUnitWeekday fromDate:date];
+    NSInteger weekDayAsNumberEnd = [componentsEnd weekday];
+    weekDayAsNumberEnd = ((weekDayAsNumberEnd + 5) % 7) + 1;
+    [componentsEnd setDay:componentsEnd.day - weekDayAsNumberEnd + 7 * amount];
+    [componentsEnd setHour:23];
+    [componentsEnd setMinute:59];
+    [componentsEnd setSecond:59];
+    for (NSInteger i = componentsStart.day; i <= componentsEnd.day; i++) {
+        DateEventsModel *model = [DateEventsModel new];
+        [componentsStart setDay:i];
+        model.date = [[NSCalendar currentCalendar] dateFromComponents:componentsStart];
+        model.eventsArray = [[self fetchCalendarEventForOneDay:model.date] mutableCopy];
+        [self.dateEventsModelsArray addObject:model];
+    }
 }
 
 - (void)updateAuthorizationStatusToAccessEventStore {
@@ -93,14 +112,14 @@
         }
         case EKAuthorizationStatusAuthorized: {
             self.isAccessToEventStoreGranted = YES;
-            [self fetchCalendarEventsForWeek];
+            [self fetchCalendarEvents:[NSDate date] weeksAmount:2];
             break;
         }
         case EKAuthorizationStatusNotDetermined: {
             [self.eventStore requestAccessToEntityType:EKEntityTypeEvent
                                             completion:^(BOOL granted, NSError *error) {
                                                 dispatch_async(dispatch_get_main_queue(), ^{
-                                                    [self fetchCalendarEventsForWeek];
+                                                    [self fetchCalendarEvents:[NSDate date] weeksAmount:2];
                                                 });
                                             }];
             break;
@@ -112,26 +131,73 @@
 - (nonnull __kindof UICollectionViewCell *)collectionView:(nonnull UICollectionView *)collectionView cellForItemAtIndexPath:(nonnull NSIndexPath *)indexPath {
     static NSString *cellIdentifier = @"DayCollectionViewCell";
     DayCollectionViewCell *cell = (DayCollectionViewCell *) [collectionView dequeueReusableCellWithReuseIdentifier:cellIdentifier forIndexPath:indexPath];
-    cell.dayLabel.text = [NSString stringWithFormat:@"%ld", (long)indexPath.item];
-    cell.weekDaylabel.text = @"BT";
+    NSDateComponents *components = [[NSCalendar currentCalendar] components: NSCalendarUnitDay | NSCalendarUnitWeekday fromDate:self.dateEventsModelsArray[indexPath.item].date];
+    cell.dayLabel.text = [NSString stringWithFormat:@"%ld", (long)components.day];
+    
+    NSDateFormatter * df = [[NSDateFormatter alloc] init];
+    [df setLocale: [NSLocale localeWithLocaleIdentifier:[[NSLocale preferredLanguages] objectAtIndex:0]]];
+    NSArray * weekdays = [df shortWeekdaySymbols];
+    cell.weekDaylabel.text = [weekdays[components.weekday - 1] uppercaseString];
+    
+    if (self.dateEventsModelsArray[indexPath.item].eventsArray.count == 0) {
+        cell.dotView.hidden = YES;
+    } else {
+        cell.dotView.hidden = NO;
+    }
+    
+    NSInteger selectedWeekDay = 0;
+    if (cell.selected) {
+        selectedWeekDay = indexPath.item;
+    }
+    if (components.weekday == selectedWeekDay) {
+        cell.selected = YES;
+    }
     return cell;
 }
 
 - (NSInteger)collectionView:(nonnull UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    return 50;
+    return self.dateEventsModelsArray.count;
+}
+
+- (CGFloat)widthOfDayCell {
+    int cellsPerPage = 7;
+    return self.selectDayCollectionView.bounds.size.width / cellsPerPage;
+}
+
+- (NSUInteger)maximumNumberOfColumnsForCollectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout
+{
+    return 7;
+}
+
+- (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section
+{
+    return 0.0;
+}
+
+- (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section
+{
+    return 0.0;
+}
+
+- (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout insetForSectionAtIndex:(NSInteger)section
+{
+    
+    return UIEdgeInsetsMake(0, 0, 0, 0);
 }
 
 - (CGSize)collectionView:(UICollectionView *)collectionView
                   layout:(UICollectionViewLayout *)collectionViewLayout
   sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
-    return CGSizeMake(50, 50);
+    return CGSizeMake([self widthOfDayCell], 50);
 }
 
-- (CGFloat)collectionView:(UICollectionView *)collectionView
-                   layout:(UICollectionViewLayout *)collectionViewLayout
-minimumInteritemSpacingForSectionAtIndex:(NSInteger)section {
-    return 5;
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
+    [self fetchCalendarEvents:[[NSCalendar currentCalendar] dateByAddingUnit:NSCalendarUnitDay value:1 toDate:self.dateEventsModelsArray.lastObject.date options:0] weeksAmount:1];
+    [self.selectDayCollectionView reloadData];
 }
 
+- (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
+    
+}
 
 @end
