@@ -14,6 +14,7 @@
 #import "DayEventViewManager.h"
 #import "DayEventsLayout.h"
 #import "GridLine.h"
+#import "TimeLabel.h"
 
 @interface ViewController () <UICollectionViewDelegate, UICollectionViewDataSource>
 
@@ -47,13 +48,15 @@
     [self.selectDayCollectionView setPagingEnabled:YES];
     
     DayEventsLayout * dayEventsLayout = [DayEventsLayout new];
-    [dayEventsLayout registerClass:GridLine.class forDecorationViewOfKind:NSStringFromClass(GridLine.class)];
     self.dayEventsCollectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:dayEventsLayout];
     self.dayEventsCollectionView.translatesAutoresizingMaskIntoConstraints = NO;
     [self.view addSubview:self.dayEventsCollectionView];
     self.dayEventsCollectionView.backgroundColor = [UIColor whiteColor];
     self.dayEventViewManager = [DayEventViewManager new];
     self.dayEventViewManager.collectionView = self.dayEventsCollectionView;
+    
+    [dayEventsLayout registerClass:GridLine.class forDecorationViewOfKind:NSStringFromClass(GridLine.class)];
+    [self.dayEventsCollectionView registerClass:TimeLabel.class forSupplementaryViewOfKind:NSStringFromClass(TimeLabel.class) withReuseIdentifier:NSStringFromClass(TimeLabel.class)];
     
     self.selectDayCollectionView.delegate = self;
     self.selectDayCollectionView.dataSource = self;
