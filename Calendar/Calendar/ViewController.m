@@ -11,6 +11,8 @@
 #import "DayCollectionViewCell.h"
 #import "UIColor+extensions.h"
 #import "DateEventsModel.h"
+#import "DayEventViewManager.h"
+#import "DayEventsLayout.h"
 
 @interface ViewController () <UICollectionViewDelegate, UICollectionViewDataSource>
 
@@ -18,6 +20,9 @@
 @property (nonatomic) BOOL isAccessToEventStoreGranted;
 @property (strong, nonatomic) UICollectionView *selectDayCollectionView;
 @property (strong, nonatomic) NSMutableArray <DateEventsModel *> *dateEventsModelsArray;
+@property (strong, nonatomic) UICollectionView *dayEventsCollectionView;
+@property (strong, nonatomic) DayEventViewManager *dayEventViewManager;
+
 
 @end
 
@@ -40,6 +45,27 @@
     self.selectDayCollectionView.backgroundColor = [UIColor blueDark];
     [self.selectDayCollectionView setPagingEnabled:YES];
     
+    self.dayEventsCollectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:[DayEventsLayout new]];
+    self.dayEventsCollectionView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.view addSubview:self.dayEventsCollectionView];
+    self.dayEventsCollectionView.backgroundColor = [UIColor whiteColor];
+    self.dayEventViewManager = [DayEventViewManager new];
+    self.dayEventViewManager.collectionView = self.dayEventsCollectionView;
+    
+    self.selectDayCollectionView.delegate = self;
+    self.selectDayCollectionView.dataSource = self;
+//    self.dayEventsCollectionView.delegate = self;
+//    self.dayEventsCollectionView.dataSource = self;
+    
+    [self.selectDayCollectionView registerClass:[DayCollectionViewCell class] forCellWithReuseIdentifier:@"DayCollectionViewCell"];
+    
+    self.dateEventsModelsArray = [NSMutableArray new];
+    
+    [self setupConstraints];
+    [self updateAuthorizationStatusToAccessEventStore];
+}
+
+- (void) setupConstraints {
     [NSLayoutConstraint activateConstraints:@[
                                               [self.selectDayCollectionView.leadingAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor],
                                               [self.selectDayCollectionView.trailingAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor],
@@ -47,15 +73,14 @@
                                               [self.selectDayCollectionView.heightAnchor constraintEqualToConstant:60]
                                               ]
      ];
-    self.selectDayCollectionView.delegate = self;
-    self.selectDayCollectionView.dataSource = self;
     
-    [self.selectDayCollectionView registerClass:[DayCollectionViewCell class] forCellWithReuseIdentifier:@"DayCollectionViewCell"];
-    
-    self.dateEventsModelsArray = [NSMutableArray new];
-    
-    [self updateAuthorizationStatusToAccessEventStore];
-    
+    [NSLayoutConstraint activateConstraints:@[
+                                              [self.dayEventsCollectionView.leadingAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor],
+                                              [self.dayEventsCollectionView.trailingAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor],
+                                              [self.dayEventsCollectionView.topAnchor constraintEqualToAnchor:self.selectDayCollectionView.bottomAnchor],
+                                              [self.dayEventsCollectionView.bottomAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor]
+                                              ]
+     ];
 }
 
 - (NSArray *)fetchCalendarEventsFromDate:(NSDate *)startDate toDate:(NSDate *)endDate {
