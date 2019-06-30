@@ -15,6 +15,7 @@
 #import "DayEventsLayout.h"
 #import "GridLine.h"
 #import "TimeLabel.h"
+#import "CurrentTime.h"
 
 @interface ViewController () <UICollectionViewDelegate, UICollectionViewDataSource>
 
@@ -57,11 +58,10 @@
     
     [dayEventsLayout registerClass:GridLine.class forDecorationViewOfKind:NSStringFromClass(GridLine.class)];
     [self.dayEventsCollectionView registerClass:TimeLabel.class forSupplementaryViewOfKind:NSStringFromClass(TimeLabel.class) withReuseIdentifier:NSStringFromClass(TimeLabel.class)];
+    [self.dayEventsCollectionView registerClass:CurrentTime.class forSupplementaryViewOfKind:NSStringFromClass(CurrentTime.class) withReuseIdentifier:NSStringFromClass(CurrentTime.class)];
     
     self.selectDayCollectionView.delegate = self;
     self.selectDayCollectionView.dataSource = self;
-//    self.dayEventsCollectionView.delegate = self;
-//    self.dayEventsCollectionView.dataSource = self;
     
     [self.selectDayCollectionView registerClass:[DayCollectionViewCell class] forCellWithReuseIdentifier:@"DayCollectionViewCell"];
     

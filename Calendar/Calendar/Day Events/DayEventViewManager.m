@@ -8,6 +8,7 @@
 
 #import "DayEventViewManager.h"
 #import "TimeLabel.h"
+#import "CurrentTime.h"
 
 @interface DayEventViewManager ()
 
@@ -30,14 +31,18 @@
 }
 
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath {
+    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
+    [formatter setDateFormat:@"HH:mm"];
     if ([kind isEqualToString:NSStringFromClass(TimeLabel.class)]) {
         TimeLabel * timeLabel = [collectionView dequeueReusableSupplementaryViewOfKind:NSStringFromClass(TimeLabel.class) withReuseIdentifier:NSStringFromClass(TimeLabel.class) forIndexPath:indexPath];
-        NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-        [formatter setDateFormat:@"HH:mm"];
         NSDate *time = [formatter dateFromString:@"00:00"];
-        time = [time dateByAddingTimeInterval:60*15*indexPath.item];
+        time = [time dateByAddingTimeInterval:60 * 15 * indexPath.item];
         timeLabel.timeLabel.text = [formatter stringFromDate:time];
         return timeLabel;
+    } else if ([kind isEqualToString:NSStringFromClass(CurrentTime.class)]) {
+        CurrentTime * currentTime = [collectionView dequeueReusableSupplementaryViewOfKind:NSStringFromClass(CurrentTime.class) withReuseIdentifier:NSStringFromClass(CurrentTime.class) forIndexPath:indexPath];
+        currentTime.currentTimeLabel.text = [formatter stringFromDate:[NSDate date]];
+        return currentTime;
     } else {
         NSAssert(YES, @"Impossible case. Seems like introducing new kind of supplementary view, but not handling here. Return empty view to avoid crashes on production");
         return [UICollectionReusableView new];

@@ -17,7 +17,7 @@
         self.timeLabel.translatesAutoresizingMaskIntoConstraints = NO;
         [self addSubview:self.timeLabel];
         [NSLayoutConstraint activateConstraints:@[
-                                                  [self.timeLabel.leadingAnchor constraintEqualToAnchor:self.safeAreaLayoutGuide.leadingAnchor],
+                                                  [self.timeLabel.leadingAnchor constraintEqualToAnchor:self.safeAreaLayoutGuide.leadingAnchor constant:10],
                                                   [self.timeLabel.trailingAnchor constraintEqualToAnchor:self.safeAreaLayoutGuide.trailingAnchor],
                                                   [self.timeLabel.centerYAnchor constraintEqualToAnchor:self.centerYAnchor]
                                                   ]];

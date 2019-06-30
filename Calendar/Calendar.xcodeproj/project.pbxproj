@@ -12,6 +12,7 @@
 		F82DB3B222C8DE8E00163F9D /* DayEventsLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = F82DB3B122C8DE8E00163F9D /* DayEventsLayout.m */; };
 		F82DB3B522C8E31A00163F9D /* GridLine.m in Sources */ = {isa = PBXBuildFile; fileRef = F82DB3B422C8E31A00163F9D /* GridLine.m */; };
 		F8AB674E22C8F22800C9D954 /* TimeLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = F8AB674D22C8F22800C9D954 /* TimeLabel.m */; };
+		F8AB675122C9242300C9D954 /* CurrentTime.m in Sources */ = {isa = PBXBuildFile; fileRef = F8AB675022C9242300C9D954 /* CurrentTime.m */; };
 		F8B9189422C6485A0030A28A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = F8B9189322C6485A0030A28A /* AppDelegate.m */; };
 		F8B9189722C6485A0030A28A /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = F8B9189622C6485A0030A28A /* ViewController.m */; };
 		F8B9189A22C6485A0030A28A /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F8B9189822C6485A0030A28A /* Main.storyboard */; };
@@ -52,6 +53,8 @@
 		F82DB3B422C8E31A00163F9D /* GridLine.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GridLine.m; sourceTree = "<group>"; };
 		F8AB674C22C8F22800C9D954 /* TimeLabel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TimeLabel.h; sourceTree = "<group>"; };
 		F8AB674D22C8F22800C9D954 /* TimeLabel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TimeLabel.m; sourceTree = "<group>"; };
+		F8AB674F22C9242300C9D954 /* CurrentTime.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CurrentTime.h; sourceTree = "<group>"; };
+		F8AB675022C9242300C9D954 /* CurrentTime.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CurrentTime.m; sourceTree = "<group>"; };
 		F8B9188F22C6485A0030A28A /* Calendar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Calendar.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F8B9189222C6485A0030A28A /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		F8B9189322C6485A0030A28A /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -110,6 +113,8 @@
 				F82DB3B422C8E31A00163F9D /* GridLine.m */,
 				F8AB674C22C8F22800C9D954 /* TimeLabel.h */,
 				F8AB674D22C8F22800C9D954 /* TimeLabel.m */,
+				F8AB674F22C9242300C9D954 /* CurrentTime.h */,
+				F8AB675022C9242300C9D954 /* CurrentTime.m */,
 			);
 			path = "Day Events";
 			sourceTree = "<group>";
@@ -306,6 +311,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F8B918C922C6A6BD0030A28A /* UIColor+extensions.m in Sources */,
+				F8AB675122C9242300C9D954 /* CurrentTime.m in Sources */,
 				F8B9189722C6485A0030A28A /* ViewController.m in Sources */,
 				F8B918A222C6485C0030A28A /* main.m in Sources */,
 				F82DB3AF22C8B8F400163F9D /* DayEventViewManager.m in Sources */,
