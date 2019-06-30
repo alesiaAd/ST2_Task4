@@ -8,9 +8,11 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
+#import "DateEventsModel.h"
 
 @interface DayEventViewManager : NSObject <UICollectionViewDataSource, UICollectionViewDelegate>
 
 @property (strong, nonatomic) UICollectionView * collectionView;
+@property (strong, nonatomic) DateEventsModel *model;
 
 @end

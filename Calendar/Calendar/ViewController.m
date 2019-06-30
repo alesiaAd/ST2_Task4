@@ -69,6 +69,18 @@
     
     [self setupConstraints];
     [self updateAuthorizationStatusToAccessEventStore];
+    
+    NSUInteger index = [self.dateEventsModelsArray indexOfObjectPassingTest:
+                        ^BOOL(DateEventsModel *model, NSUInteger idx, BOOL *stop)
+                        {
+                            NSDateComponents *componentsModel = [[NSCalendar currentCalendar] components: NSCalendarUnitSecond | NSCalendarUnitMinute | NSCalendarUnitDay | NSCalendarUnitHour | NSCalendarUnitMonth | NSCalendarUnitYear | NSCalendarUnitWeekday fromDate:model.date];
+                            NSDateComponents *componentsCurrent = [[NSCalendar currentCalendar] components: NSCalendarUnitSecond | NSCalendarUnitMinute | NSCalendarUnitDay | NSCalendarUnitHour | NSCalendarUnitMonth | NSCalendarUnitYear | NSCalendarUnitWeekday fromDate:[NSDate date]];
+                            return componentsModel.day == componentsCurrent.day && componentsModel.month == componentsCurrent.month && componentsModel.year == componentsCurrent.year;
+                        }
+                        ];
+    
+    [self.selectDayCollectionView selectItemAtIndexPath:[NSIndexPath indexPathForItem:index inSection:0] animated:NO scrollPosition:UICollectionViewScrollPositionNone];
+    self.dayEventViewManager.model = self.dateEventsModelsArray[index];
 }
 
 - (void) setupConstraints {
@@ -228,7 +240,11 @@
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-    
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setLocale: [NSLocale localeWithLocaleIdentifier:[[NSLocale preferredLanguages] objectAtIndex:0]]];
+    [dateFormatter setDateFormat:@"d MMMM yyyy"];
+    self.title = [dateFormatter stringFromDate:self.dateEventsModelsArray[indexPath.item].date];
+    self.dayEventViewManager.model = self.dateEventsModelsArray[indexPath.item];
+    [self.dayEventViewManager.collectionView reloadData];
 }
-
 @end

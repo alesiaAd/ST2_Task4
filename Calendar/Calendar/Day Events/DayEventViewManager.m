@@ -9,6 +9,7 @@
 #import "DayEventViewManager.h"
 #import "TimeLabel.h"
 #import "CurrentTime.h"
+#import "EventCollectionViewCell.h"
 
 @interface DayEventViewManager ()
 
@@ -20,9 +21,16 @@
     _collectionView = collectionView;
     _collectionView.delegate = self;
     _collectionView.dataSource = self;
+    [_collectionView registerClass:EventCollectionViewCell.class forCellWithReuseIdentifier:NSStringFromClass(EventCollectionViewCell.class)];
+    [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(update) userInfo:nil repeats:YES];
+}
+
+- (void)update {
+    [self.collectionView reloadData];
 }
 
 - (nonnull __kindof UICollectionViewCell *)collectionView:(nonnull UICollectionView *)collectionView cellForItemAtIndexPath:(nonnull NSIndexPath *)indexPath {
+    EventCollectionViewCell *cell = (EventCollectionViewCell *) [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass(EventCollectionViewCell.class) forIndexPath:indexPath];
     return [UICollectionViewCell new];
 }
 
@@ -42,6 +50,13 @@
     } else if ([kind isEqualToString:NSStringFromClass(CurrentTime.class)]) {
         CurrentTime * currentTime = [collectionView dequeueReusableSupplementaryViewOfKind:NSStringFromClass(CurrentTime.class) withReuseIdentifier:NSStringFromClass(CurrentTime.class) forIndexPath:indexPath];
         currentTime.currentTimeLabel.text = [formatter stringFromDate:[NSDate date]];
+        NSDateComponents *componentsCurrent = [[NSCalendar currentCalendar] components: NSCalendarUnitSecond | NSCalendarUnitMinute | NSCalendarUnitDay | NSCalendarUnitHour | NSCalendarUnitMonth | NSCalendarUnitYear | NSCalendarUnitWeekday fromDate:[NSDate date]];
+        NSDateComponents *componentsModel = [[NSCalendar currentCalendar] components: NSCalendarUnitSecond | NSCalendarUnitMinute | NSCalendarUnitDay | NSCalendarUnitHour | NSCalendarUnitMonth | NSCalendarUnitYear | NSCalendarUnitWeekday fromDate:self.model.date];
+        if (componentsCurrent.day != componentsModel.day || componentsCurrent.month != componentsModel.month || componentsCurrent.year != componentsModel.year) {
+            currentTime.hidden = YES;
+        } else {
+            currentTime.hidden = NO;
+        }
         return currentTime;
     } else {
         NSAssert(YES, @"Impossible case. Seems like introducing new kind of supplementary view, but not handling here. Return empty view to avoid crashes on production");
