@@ -10,6 +10,7 @@
 #import "TimeLabel.h"
 #import "CurrentTime.h"
 #import "EventCollectionViewCell.h"
+#import <EventKit/EventKit.h>
 
 @interface DayEventViewManager ()
 
@@ -31,11 +32,16 @@
 
 - (nonnull __kindof UICollectionViewCell *)collectionView:(nonnull UICollectionView *)collectionView cellForItemAtIndexPath:(nonnull NSIndexPath *)indexPath {
     EventCollectionViewCell *cell = (EventCollectionViewCell *) [collectionView dequeueReusableCellWithReuseIdentifier:NSStringFromClass(EventCollectionViewCell.class) forIndexPath:indexPath];
-    return [UICollectionViewCell new];
+    if (self.model.eventsArray.count > 0) {
+        EKEvent *event = self.model.eventsArray[indexPath.item];
+        cell.nameLabel.text = event.title;
+        cell.backgroundColor = [UIColor colorWithCGColor:event.calendar.CGColor];
+    }
+    return cell;
 }
 
 - (NSInteger)collectionView:(nonnull UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    return 0;
+    return self.model.eventsArray.count;
 }
 
 - (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath {
@@ -46,6 +52,11 @@
         NSDate *time = [formatter dateFromString:@"00:00"];
         time = [time dateByAddingTimeInterval:60 * 15 * indexPath.item];
         timeLabel.timeLabel.text = [formatter stringFromDate:time];
+        if ([[formatter stringFromDate:time] hasSuffix:@"00"]) {
+            timeLabel.timeLabel.hidden = NO;
+        } else {
+            timeLabel.timeLabel.hidden = YES;
+        }
         return timeLabel;
     } else if ([kind isEqualToString:NSStringFromClass(CurrentTime.class)]) {
         CurrentTime * currentTime = [collectionView dequeueReusableSupplementaryViewOfKind:NSStringFromClass(CurrentTime.class) withReuseIdentifier:NSStringFromClass(CurrentTime.class) forIndexPath:indexPath];

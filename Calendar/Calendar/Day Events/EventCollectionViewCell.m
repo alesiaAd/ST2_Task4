@@ -15,6 +15,7 @@
     if (self) {
         self.nameLabel = [UILabel new];
         self.nameLabel.numberOfLines = 0;
+        [self.nameLabel sizeToFit];
         self.nameLabel.translatesAutoresizingMaskIntoConstraints = NO;
         [self.contentView addSubview:self.nameLabel];
         
@@ -22,7 +23,7 @@
                                                   [self.nameLabel.leadingAnchor constraintEqualToAnchor:self.contentView.leadingAnchor constant:10],
                                                   [self.nameLabel.trailingAnchor constraintEqualToAnchor:self.contentView.trailingAnchor constant:10],
                                                   [self.nameLabel.topAnchor constraintEqualToAnchor:self.contentView.topAnchor constant:10],
-                                                  [self.nameLabel.bottomAnchor constraintEqualToAnchor:self.contentView.bottomAnchor constant:10]
+                                                  [self.nameLabel.bottomAnchor constraintLessThanOrEqualToAnchor:self.contentView.bottomAnchor constant:-10]
                                                   ]];
     }
     return self;
