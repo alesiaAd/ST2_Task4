@@ -19,6 +19,7 @@ static const CGFloat gridLine15minsHeight = 0.5;
 static const int gridLinesNumber = 60 / 15 * 24;
 static const int timeLabelsNumber = gridLinesNumber;
 static const CGFloat timeLabelWidth = 60;
+static const CGFloat cellSpacing = 6;
 
 @interface DayEventsLayout ()
 
@@ -108,7 +109,13 @@ static const CGFloat timeLabelWidth = 60;
 }
 
 - (NSMutableArray *)prepareEventItem {
+    CGFloat startX = timeLabelWidth;
+    CGFloat containerWidth = self.collectionView.bounds.size.width - timeLabelWidth - 5;
+    
     self.eventItems = [NSMutableArray new];
+    
+    //  Step 1: Make all adjusted by Y, width = containerWidth
+    
     DayEventViewManager *dataSource = (DayEventViewManager *)self.collectionView.dataSource;
     for (int i = 0; i < dataSource.model.eventsArray.count; ++i) {
         UICollectionViewLayoutAttributes *attr = [UICollectionViewLayoutAttributes layoutAttributesForCellWithIndexPath:[NSIndexPath indexPathForItem:i inSection:0]];
@@ -117,15 +124,97 @@ static const CGFloat timeLabelWidth = 60;
         NSDateComponents *componentsEndEvent = [[NSCalendar currentCalendar] components: NSCalendarUnitSecond | NSCalendarUnitMinute | NSCalendarUnitDay | NSCalendarUnitHour | NSCalendarUnitMonth | NSCalendarUnitYear | NSCalendarUnitWeekday fromDate:event.endDate];
         CGFloat eventStartY = gridLine15minsSpacing * componentsStartEvent.hour * 4 + gridLine15minsSpacing * (componentsStartEvent.minute / 15.0);
         CGFloat eventEndY = gridLine15minsSpacing * componentsEndEvent.hour * 4 + gridLine15minsSpacing * (componentsEndEvent.minute / 15.0);
-        attr.frame = CGRectMake(timeLabelWidth, eventStartY, self.collectionView.bounds.size.width - timeLabelWidth - 5, eventEndY - eventStartY - 2);
+        attr.frame = CGRectMake(startX, eventStartY, containerWidth, eventEndY - eventStartY - 2);
         [self.eventItems addObject:attr];
-//        for (UICollectionViewLayoutAttributes *attribute in self.eventItems) {
-//            if (CGRectIntersectsRect(attr.frame, attribute.frame)) {
-//                attr.frame.size = CGSizeMake(attr.frame.size.width / 2.0, attr.frame.size.height);
-//                attribute.frame.size.width = attribute.frame.size.width / 2;
-//            }
-//        }
     }
+    
+    //  Step 2: Make all of minimum fitting width, left-aligned
+    
+    for (UICollectionViewLayoutAttributes *attribute in self.eventItems) {
+        //  Find objects that overlap current object, excluding itself
+        NSArray *overlappingItems = [self.eventItems filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id object, NSDictionary *bindings) {
+            UICollectionViewLayoutAttributes * maybeOverlappingAttribute = (UICollectionViewLayoutAttributes *)object;
+            return CGRectIntersectsRect(maybeOverlappingAttribute.frame, attribute.frame);
+        }]];
+        
+        //  If no object overlap, no need to change frames
+        if (overlappingItems.count > 1) {
+            //  Determine number of mutual exclusive frames (to calculate width)
+            NSMutableArray * startY = [NSMutableArray new];
+            NSMutableArray * endY = [NSMutableArray new];
+            for (UICollectionViewLayoutAttributes *attribute in overlappingItems) {
+                [startY addObject:@(CGRectGetMinY(attribute.frame))];
+                [endY addObject:@(CGRectGetMaxY(attribute.frame))];
+            }
+            int divisor = [self numberOfExclusiveOverlapsInInterval:startY endY:endY];
+            //  After we found divisor, we can determine minimal width of each element. Don't set it if it was previsouly set to lower value!
+            for (UICollectionViewLayoutAttributes *attribute in overlappingItems) {
+                CGRect frame = attribute.frame;
+                CGFloat newWidth = containerWidth / divisor;
+                if (newWidth < frame.size.width) {
+                    frame.size.width = newWidth;
+                }
+                attribute.frame = frame;
+            }
+        }
+    }
+    
+    //  Step 3: Align leading properly
+    
+    if (self.eventItems.count > 1) {
+        for (UICollectionViewLayoutAttributes *attribute in self.eventItems) {
+            NSArray * prevElements = [self.eventItems subarrayWithRange:NSMakeRange(0, [self.eventItems indexOfObject:attribute])];
+            UICollectionViewLayoutAttributes * overlappingAttribute = [self layoutAttribute:attribute intersectsWithAttributes:prevElements];
+            while (overlappingAttribute != nil) {
+                CGRect frame = attribute.frame;
+                frame.origin.x = CGRectGetMaxX(overlappingAttribute.frame);
+                attribute.frame = frame;
+                overlappingAttribute = [self layoutAttribute:attribute intersectsWithAttributes:prevElements];
+            }
+        }
+    }
+    
+    //  Step 4: Apply spacings
+    
+    for (UICollectionViewLayoutAttributes *attribute in self.eventItems) {
+        CGRect frame = attribute.frame;
+        frame.origin.x += cellSpacing / 2;
+        frame.size.width -= cellSpacing;
+        attribute.frame = frame;
+    }
+    
     return self.eventItems;
 }
+
+//  returns attribute of first intersection from array
+- (UICollectionViewLayoutAttributes *) layoutAttribute:(UICollectionViewLayoutAttributes *)attribute intersectsWithAttributes:(NSArray  <UICollectionViewLayoutAttributes *> *) attributes {
+    for (UICollectionViewLayoutAttributes * attributeToCheck in attributes) {
+        if (CGRectIntersectsRect(attributeToCheck.frame, attribute.frame)) {
+            return attributeToCheck;
+        }
+    }
+    return nil;
+}
+
+//  returns number of mutual exclusive intervals, found on internet and ported to objective-c
+- (int) numberOfExclusiveOverlapsInInterval:(NSArray *)startY endY:(NSArray *)endY {
+    int maxOverlap = 0;
+    int currentOverlap = 0;
+    NSArray * sortedStartY = [startY sortedArrayUsingSelector: @selector(compare:)];
+    NSArray * sortedEndY = [endY sortedArrayUsingSelector: @selector(compare:)];
+    
+    int i = 0, j = 0;
+    while (i < sortedStartY.count && j < sortedEndY.count) {
+        if ([sortedStartY[i] floatValue] < [sortedEndY[j] floatValue]) {
+            currentOverlap += 1;
+            maxOverlap = MAX(maxOverlap, currentOverlap);
+            i += 1;
+        } else {
+            currentOverlap -= 1;
+            j += 1;
+        }
+    }
+    return maxOverlap;
+}
+
 @end

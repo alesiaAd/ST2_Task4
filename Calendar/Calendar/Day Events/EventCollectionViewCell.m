@@ -21,7 +21,7 @@
         
         [NSLayoutConstraint activateConstraints:@[
                                                   [self.nameLabel.leadingAnchor constraintEqualToAnchor:self.contentView.leadingAnchor constant:10],
-                                                  [self.nameLabel.trailingAnchor constraintEqualToAnchor:self.contentView.trailingAnchor constant:10],
+                                                  [self.nameLabel.trailingAnchor constraintEqualToAnchor:self.contentView.trailingAnchor constant:-10],
                                                   [self.nameLabel.topAnchor constraintEqualToAnchor:self.contentView.topAnchor constant:10],
                                                   [self.nameLabel.bottomAnchor constraintLessThanOrEqualToAnchor:self.contentView.bottomAnchor constant:-10]
                                                   ]];

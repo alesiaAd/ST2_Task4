@@ -187,14 +187,6 @@
     } else {
         cell.dotView.hidden = NO;
     }
-    
-    NSInteger selectedWeekDay = 0;
-    if (cell.selected) {
-        selectedWeekDay = indexPath.item;
-    }
-    if (components.weekday == selectedWeekDay) {
-        cell.selected = YES;
-    }
     return cell;
 }
 
@@ -207,24 +199,19 @@
     return self.selectDayCollectionView.bounds.size.width / cellsPerPage;
 }
 
-- (NSUInteger)maximumNumberOfColumnsForCollectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout
-{
+- (NSUInteger)maximumNumberOfColumnsForCollectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout {
     return 7;
 }
 
-- (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section
-{
+- (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section {
     return 0.0;
 }
 
-- (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section
-{
+- (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section {
     return 0.0;
 }
 
-- (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout insetForSectionAtIndex:(NSInteger)section
-{
-    
+- (UIEdgeInsets)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout insetForSectionAtIndex:(NSInteger)section {
     return UIEdgeInsetsMake(0, 0, 0, 0);
 }
 
@@ -247,4 +234,5 @@
     self.dayEventViewManager.model = self.dateEventsModelsArray[indexPath.item];
     [self.dayEventViewManager.collectionView reloadData];
 }
+
 @end
