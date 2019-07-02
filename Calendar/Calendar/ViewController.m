@@ -25,6 +25,8 @@
 @property (strong, nonatomic) NSMutableArray <DateEventsModel *> *dateEventsModelsArray;
 @property (strong, nonatomic) UICollectionView *dayEventsCollectionView;
 @property (strong, nonatomic) DayEventViewManager *dayEventViewManager;
+@property (assign, nonatomic) NSInteger selectedWeekDay;
+@property (strong, nonatomic) NSMutableArray<NSIndexPath *> *visibleIndexPaths;
 
 
 @end
@@ -75,10 +77,14 @@
                         {
                             NSDateComponents *componentsModel = [[NSCalendar currentCalendar] components: NSCalendarUnitSecond | NSCalendarUnitMinute | NSCalendarUnitDay | NSCalendarUnitHour | NSCalendarUnitMonth | NSCalendarUnitYear | NSCalendarUnitWeekday fromDate:model.date];
                             NSDateComponents *componentsCurrent = [[NSCalendar currentCalendar] components: NSCalendarUnitSecond | NSCalendarUnitMinute | NSCalendarUnitDay | NSCalendarUnitHour | NSCalendarUnitMonth | NSCalendarUnitYear | NSCalendarUnitWeekday fromDate:[NSDate date]];
-                            return componentsModel.day == componentsCurrent.day && componentsModel.month == componentsCurrent.month && componentsModel.year == componentsCurrent.year;
+                            if (componentsModel.day == componentsCurrent.day && componentsModel.month == componentsCurrent.month && componentsModel.year == componentsCurrent.year) {
+                                self.selectedWeekDay = componentsModel.weekday;
+                                return YES;
+                            } else {
+                                return NO;
+                            }
                         }
                         ];
-    
     [self.selectDayCollectionView selectItemAtIndexPath:[NSIndexPath indexPathForItem:index inSection:0] animated:NO scrollPosition:UICollectionViewScrollPositionNone];
     self.dayEventViewManager.model = self.dateEventsModelsArray[index];
 }
@@ -172,6 +178,7 @@
 
 
 - (nonnull __kindof UICollectionViewCell *)collectionView:(nonnull UICollectionView *)collectionView cellForItemAtIndexPath:(nonnull NSIndexPath *)indexPath {
+    self.visibleIndexPaths = [self.selectDayCollectionView indexPathsForVisibleItems];
     static NSString *cellIdentifier = @"DayCollectionViewCell";
     DayCollectionViewCell *cell = (DayCollectionViewCell *) [collectionView dequeueReusableCellWithReuseIdentifier:cellIdentifier forIndexPath:indexPath];
     NSDateComponents *components = [[NSCalendar currentCalendar] components: NSCalendarUnitDay | NSCalendarUnitWeekday fromDate:self.dateEventsModelsArray[indexPath.item].date];
@@ -186,6 +193,13 @@
         cell.dotView.hidden = YES;
     } else {
         cell.dotView.hidden = NO;
+    }
+    if (components.weekday == self.selectedWeekDay && ([self.visibleIndexPaths containsObject:indexPath] || self.visibleIndexPaths.count < 7)) {
+        cell.selected = YES;
+        self.dayEventViewManager.model = self.dateEventsModelsArray[indexPath.item];
+        [self.dayEventViewManager.collectionView reloadData];
+    } else {
+        cell.selected = NO;
     }
     return cell;
 }
@@ -222,7 +236,11 @@
 }
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
-    [self fetchCalendarEvents:[[NSCalendar currentCalendar] dateByAddingUnit:NSCalendarUnitDay value:1 toDate:self.dateEventsModelsArray.lastObject.date options:0] weeksAmount:1];
+    self.visibleIndexPaths = [self.selectDayCollectionView indexPathsForVisibleItems];
+    self.visibleIndexPaths = [self.visibleIndexPaths sortedArrayUsingSelector: @selector(compare:)];
+    if (self.visibleIndexPaths.lastObject.item == self.dateEventsModelsArray.count - 1) {
+        [self fetchCalendarEvents:[[NSCalendar currentCalendar] dateByAddingUnit:NSCalendarUnitDay value:1 toDate:self.dateEventsModelsArray.lastObject.date options:0] weeksAmount:1];
+    }
     [self.selectDayCollectionView reloadData];
 }
 
@@ -232,6 +250,10 @@
     [dateFormatter setDateFormat:@"d MMMM yyyy"];
     self.title = [dateFormatter stringFromDate:self.dateEventsModelsArray[indexPath.item].date];
     self.dayEventViewManager.model = self.dateEventsModelsArray[indexPath.item];
+    
+    NSDateComponents *components = [[NSCalendar currentCalendar] components: NSCalendarUnitSecond | NSCalendarUnitMinute | NSCalendarUnitDay | NSCalendarUnitHour | NSCalendarUnitMonth | NSCalendarUnitYear | NSCalendarUnitWeekday fromDate:self.dateEventsModelsArray[indexPath.item].date];
+    self.selectedWeekDay = components.weekday;
+    [self.selectDayCollectionView reloadData];
     [self.dayEventViewManager.collectionView reloadData];
 }
 
