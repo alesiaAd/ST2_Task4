@@ -40,6 +40,12 @@
     [dateFormatter setLocale: [NSLocale localeWithLocaleIdentifier:[[NSLocale preferredLanguages] objectAtIndex:0]]];
     [dateFormatter setDateFormat:@"d MMMM yyyy"];
     self.title = [dateFormatter stringFromDate:[NSDate date]];
+    NSDictionary *size = [NSDictionary dictionaryWithObjectsAndKeys:[UIFont systemFontOfSize:17 weight: UIFontWeightSemibold], NSFontAttributeName, nil];
+    NSDictionary *color=[NSDictionary dictionaryWithObjectsAndKeys:[UIColor whiteColor],NSForegroundColorAttributeName, nil];
+    self.navigationController.navigationBar.titleTextAttributes = size;
+    self.navigationController.navigationBar.titleTextAttributes = color;
+    self.navigationController.navigationBar.translucent = NO;
+    self.navigationController.navigationBar.barTintColor = UIColor.blueDark;
     
     UICollectionViewFlowLayout *collectionViewFlowLayout = [[UICollectionViewFlowLayout alloc] init];
     self.selectDayCollectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:collectionViewFlowLayout];
@@ -178,7 +184,7 @@
 
 
 - (nonnull __kindof UICollectionViewCell *)collectionView:(nonnull UICollectionView *)collectionView cellForItemAtIndexPath:(nonnull NSIndexPath *)indexPath {
-    self.visibleIndexPaths = [self.selectDayCollectionView indexPathsForVisibleItems];
+    self.visibleIndexPaths = [[self.selectDayCollectionView indexPathsForVisibleItems] mutableCopy];
     static NSString *cellIdentifier = @"DayCollectionViewCell";
     DayCollectionViewCell *cell = (DayCollectionViewCell *) [collectionView dequeueReusableCellWithReuseIdentifier:cellIdentifier forIndexPath:indexPath];
     NSDateComponents *components = [[NSCalendar currentCalendar] components: NSCalendarUnitDay | NSCalendarUnitWeekday fromDate:self.dateEventsModelsArray[indexPath.item].date];
@@ -236,8 +242,8 @@
 }
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
-    self.visibleIndexPaths = [self.selectDayCollectionView indexPathsForVisibleItems];
-    self.visibleIndexPaths = [self.visibleIndexPaths sortedArrayUsingSelector: @selector(compare:)];
+    self.visibleIndexPaths = [[self.selectDayCollectionView indexPathsForVisibleItems] mutableCopy];
+    self.visibleIndexPaths = [[self.visibleIndexPaths sortedArrayUsingSelector: @selector(compare:)] mutableCopy];
     if (self.visibleIndexPaths.lastObject.item == self.dateEventsModelsArray.count - 1) {
         [self fetchCalendarEvents:[[NSCalendar currentCalendar] dateByAddingUnit:NSCalendarUnitDay value:1 toDate:self.dateEventsModelsArray.lastObject.date options:0] weeksAmount:1];
     }

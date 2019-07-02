@@ -124,7 +124,7 @@ static const CGFloat cellSpacing = 6;
         NSDateComponents *componentsEndEvent = [[NSCalendar currentCalendar] components: NSCalendarUnitSecond | NSCalendarUnitMinute | NSCalendarUnitDay | NSCalendarUnitHour | NSCalendarUnitMonth | NSCalendarUnitYear | NSCalendarUnitWeekday fromDate:event.endDate];
         CGFloat eventStartY = gridLine15minsSpacing * componentsStartEvent.hour * 4 + gridLine15minsSpacing * (componentsStartEvent.minute / 15.0);
         CGFloat eventEndY = gridLine15minsSpacing * componentsEndEvent.hour * 4 + gridLine15minsSpacing * (componentsEndEvent.minute / 15.0);
-        attr.frame = CGRectMake(startX, eventStartY, containerWidth, eventEndY - eventStartY - 2);
+        attr.frame = CGRectMake(startX, eventStartY, containerWidth, eventEndY - eventStartY - cellSpacing / 2);
         [self.eventItems addObject:attr];
     }
     

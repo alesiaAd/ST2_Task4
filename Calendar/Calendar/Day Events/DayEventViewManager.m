@@ -35,7 +35,9 @@
     if (self.model.eventsArray.count > 0) {
         EKEvent *event = self.model.eventsArray[indexPath.item];
         cell.nameLabel.text = event.title;
-        cell.backgroundColor = [UIColor colorWithCGColor:event.calendar.CGColor];
+        cell.backgroundColor = [[UIColor colorWithCGColor:event.calendar.CGColor] colorWithAlphaComponent:0.5];
+        cell.layer.zPosition = 1;
+        
     }
     return cell;
 }
@@ -68,6 +70,7 @@
         } else {
             currentTime.hidden = NO;
         }
+        currentTime.layer.zPosition = 2;
         return currentTime;
     } else {
         NSAssert(YES, @"Impossible case. Seems like introducing new kind of supplementary view, but not handling here. Return empty view to avoid crashes on production");
