@@ -125,21 +125,39 @@
 }
 
 - (void) setupConstraints {
-    [NSLayoutConstraint activateConstraints:@[
-                                              [self.selectDayCollectionView.leadingAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor],
-                                              [self.selectDayCollectionView.trailingAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor],
-                                              [self.selectDayCollectionView.topAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor],
-                                              [self.selectDayCollectionView.heightAnchor constraintEqualToConstant:60]
-                                              ]
-     ];
-    
-    [NSLayoutConstraint activateConstraints:@[
-                                              [self.dayEventsCollectionView.leadingAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor],
-                                              [self.dayEventsCollectionView.trailingAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor],
-                                              [self.dayEventsCollectionView.topAnchor constraintEqualToAnchor:self.selectDayCollectionView.bottomAnchor],
-                                              [self.dayEventsCollectionView.bottomAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor]
-                                              ]
-     ];
+    if (@available(iOS 11.0, *)) {
+        [NSLayoutConstraint activateConstraints:@[
+                                                  [self.selectDayCollectionView.leadingAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor],
+                                                  [self.selectDayCollectionView.trailingAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor],
+                                                  [self.selectDayCollectionView.topAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor],
+                                                  [self.selectDayCollectionView.heightAnchor constraintEqualToConstant:60]
+                                                  ]
+         ];
+        
+        [NSLayoutConstraint activateConstraints:@[
+                                                  [self.dayEventsCollectionView.leadingAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor],
+                                                  [self.dayEventsCollectionView.trailingAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor],
+                                                  [self.dayEventsCollectionView.topAnchor constraintEqualToAnchor:self.selectDayCollectionView.bottomAnchor],
+                                                  [self.dayEventsCollectionView.bottomAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor]
+                                                  ]
+         ];
+    } else {
+        [NSLayoutConstraint activateConstraints:@[
+                                                  [self.selectDayCollectionView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
+                                                  [self.selectDayCollectionView.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor],
+                                                  [self.selectDayCollectionView.topAnchor constraintEqualToAnchor:self.view.topAnchor],
+                                                  [self.selectDayCollectionView.heightAnchor constraintEqualToConstant:60]
+                                                  ]
+         ];
+        
+        [NSLayoutConstraint activateConstraints:@[
+                                                  [self.dayEventsCollectionView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
+                                                  [self.dayEventsCollectionView.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor],
+                                                  [self.dayEventsCollectionView.topAnchor constraintEqualToAnchor:self.selectDayCollectionView.bottomAnchor],
+                                                  [self.dayEventsCollectionView.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor]
+                                                  ]
+         ];
+    }
 }
 
 - (NSArray *)fetchCalendarEventsFromDate:(NSDate *)startDate toDate:(NSDate *)endDate {
@@ -233,6 +251,7 @@
         cell.selected = YES;
         self.dayEventViewManager.model = self.dateEventsModelsArray[indexPath.item];
         [self.dayEventViewManager.collectionView reloadData];
+        self.dayEventsCollectionView.contentOffset = CGPointMake(0, 0);
     } else {
         cell.selected = NO;
     }
@@ -277,6 +296,7 @@
         [self fetchCalendarEvents:[[NSCalendar currentCalendar] dateByAddingUnit:NSCalendarUnitDay value:1 toDate:self.dateEventsModelsArray.lastObject.date options:0] weeksAmount:1];
     }
     [self.selectDayCollectionView reloadData];
+    self.dayEventsCollectionView.contentOffset = CGPointMake(0, 0);
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
@@ -287,6 +307,7 @@
     self.selectedWeekDay = components.weekday;
     [self.selectDayCollectionView reloadData];
     [self.dayEventViewManager.collectionView reloadData];
+    self.dayEventsCollectionView.contentOffset = CGPointMake(0, 0);
 }
 
 @end
