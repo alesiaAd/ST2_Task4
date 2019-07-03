@@ -59,6 +59,14 @@
         } else {
             timeLabel.timeLabel.hidden = YES;
         }
+        for (EKEvent *event in self.model.eventsArray) {
+            if ([timeLabel.timeLabel.text isEqualToString:[formatter stringFromDate:event.startDate]]) {
+                timeLabel.timeLabel.hidden = NO;
+            } else if ([[[formatter stringFromDate:event.startDate] substringToIndex:3] integerValue] == [[timeLabel.timeLabel.text substringToIndex:3] integerValue] && [[timeLabel.timeLabel.text substringFromIndex:3] integerValue] - [[[formatter stringFromDate:event.startDate] substringFromIndex:3] integerValue] < 0) {
+                timeLabel.timeLabel.hidden = NO;
+                timeLabel.timeLabel.text = [formatter stringFromDate:event.startDate];
+            }
+        }
         return timeLabel;
     } else if ([kind isEqualToString:NSStringFromClass(CurrentTime.class)]) {
         CurrentTime * currentTime = [collectionView dequeueReusableSupplementaryViewOfKind:NSStringFromClass(CurrentTime.class) withReuseIdentifier:NSStringFromClass(CurrentTime.class) forIndexPath:indexPath];
