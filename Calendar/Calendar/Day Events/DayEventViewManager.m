@@ -14,6 +14,8 @@
 
 @interface DayEventViewManager ()
 
+@property (strong, nonatomic) NSTimer * updateTimer;
+
 @end
 
 @implementation DayEventViewManager
@@ -23,7 +25,9 @@
     _collectionView.delegate = self;
     _collectionView.dataSource = self;
     [_collectionView registerClass:EventCollectionViewCell.class forCellWithReuseIdentifier:NSStringFromClass(EventCollectionViewCell.class)];
-    [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(update) userInfo:nil repeats:YES];
+    [self.updateTimer invalidate];
+    self.updateTimer = [NSTimer scheduledTimerWithTimeInterval:1 target:self selector:@selector(update) userInfo:nil repeats:YES];
+    [self update];
 }
 
 - (void)update {
@@ -37,7 +41,6 @@
         cell.nameLabel.text = event.title;
         cell.backgroundColor = [[UIColor colorWithCGColor:event.calendar.CGColor] colorWithAlphaComponent:0.5];
         cell.layer.zPosition = 1;
-        
     }
     return cell;
 }

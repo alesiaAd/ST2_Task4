@@ -26,24 +26,26 @@
 @property (strong, nonatomic) UICollectionView *dayEventsCollectionView;
 @property (strong, nonatomic) DayEventViewManager *dayEventViewManager;
 @property (assign, nonatomic) NSInteger selectedWeekDay;
-@property (strong, nonatomic) NSMutableArray<NSIndexPath *> *visibleIndexPaths;
+
+@property (assign) BOOL didSetInitialOffset;
 
 
 @end
 
 @implementation ViewController
 
-- (void)viewWillAppear:(BOOL)animated {
-    [super viewWillAppear:animated];
+- (void) viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    if(!self.didSetInitialOffset) {
+        [self makeInitialContentOffset];
+        self.didSetInitialOffset = YES;
+    }
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    [dateFormatter setLocale: [NSLocale localeWithLocaleIdentifier:[[NSLocale preferredLanguages] objectAtIndex:0]]];
-    [dateFormatter setDateFormat:@"d MMMM yyyy"];
-    self.title = [dateFormatter stringFromDate:[NSDate date]];
+    self.title = [self makeStringFromDateFormatter:[NSDate date]];
     NSDictionary *size = [NSDictionary dictionaryWithObjectsAndKeys:[UIFont systemFontOfSize:17 weight: UIFontWeightSemibold], NSFontAttributeName, nil];
     NSDictionary *color=[NSDictionary dictionaryWithObjectsAndKeys:[UIColor whiteColor],NSForegroundColorAttributeName, nil];
     self.navigationController.navigationBar.titleTextAttributes = size;
@@ -97,6 +99,29 @@
                         ];
     [self.selectDayCollectionView selectItemAtIndexPath:[NSIndexPath indexPathForItem:index inSection:0] animated:NO scrollPosition:UICollectionViewScrollPositionNone];
     self.dayEventViewManager.model = self.dateEventsModelsArray[index];
+}
+
+- (void) makeInitialContentOffset {
+    NSDate *currentDate = [NSDate date];
+    NSDateComponents *components = [[NSCalendar currentCalendar] components: NSCalendarUnitSecond | NSCalendarUnitMinute | NSCalendarUnitDay | NSCalendarUnitHour | NSCalendarUnitMonth | NSCalendarUnitYear | NSCalendarUnitWeekday fromDate:currentDate];
+    NSInteger minutesBeforeLast15 = components.minute % 15;
+    NSDate *dateToScroll = [NSDate dateWithTimeInterval:-(minutesBeforeLast15 + 15) * 60 - components.second sinceDate:currentDate];
+    CGFloat currentTimeOffset = [DayEventsLayout yOffsetForDate:currentDate];
+    CGFloat offsetToScroll = [DayEventsLayout yOffsetForDate:dateToScroll];
+    //  if offset is in current day. If offsetToScroll > currentTimeOffset, it will mean that we are trying to scroll to yesterday
+    if(offsetToScroll < currentTimeOffset) {
+        //  if we won't exceed content size
+        if(offsetToScroll + self.dayEventsCollectionView.bounds.size.height < self.dayEventsCollectionView.contentSize.height) {
+            self.dayEventsCollectionView.contentOffset = CGPointMake(0, offsetToScroll);
+        }
+    }
+}
+
+-(NSString *)makeStringFromDateFormatter:(NSDate *)date {
+    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
+    [dateFormatter setLocale: [NSLocale localeWithLocaleIdentifier:[[NSLocale preferredLanguages] objectAtIndex:0]]];
+    [dateFormatter setDateFormat:@"d MMMM yyyy"];
+    return [dateFormatter stringFromDate:date];
 }
 
 - (void) setupConstraints {
@@ -188,7 +213,7 @@
 
 
 - (nonnull __kindof UICollectionViewCell *)collectionView:(nonnull UICollectionView *)collectionView cellForItemAtIndexPath:(nonnull NSIndexPath *)indexPath {
-    self.visibleIndexPaths = [[self.selectDayCollectionView indexPathsForVisibleItems] mutableCopy];
+    NSMutableArray<NSIndexPath *> *visibleIndexPaths = [[self.selectDayCollectionView indexPathsForVisibleItems] mutableCopy];
     static NSString *cellIdentifier = @"DayCollectionViewCell";
     DayCollectionViewCell *cell = (DayCollectionViewCell *) [collectionView dequeueReusableCellWithReuseIdentifier:cellIdentifier forIndexPath:indexPath];
     NSDateComponents *components = [[NSCalendar currentCalendar] components: NSCalendarUnitDay | NSCalendarUnitWeekday fromDate:self.dateEventsModelsArray[indexPath.item].date];
@@ -204,7 +229,7 @@
     } else {
         cell.dotView.hidden = NO;
     }
-    if (components.weekday == self.selectedWeekDay && ([self.visibleIndexPaths containsObject:indexPath] || self.visibleIndexPaths.count < 7)) {
+    if (components.weekday == self.selectedWeekDay && ([visibleIndexPaths containsObject:indexPath] || visibleIndexPaths.count < 7)) {
         cell.selected = YES;
         self.dayEventViewManager.model = self.dateEventsModelsArray[indexPath.item];
         [self.dayEventViewManager.collectionView reloadData];
@@ -246,19 +271,16 @@
 }
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
-    self.visibleIndexPaths = [[self.selectDayCollectionView indexPathsForVisibleItems] mutableCopy];
-    self.visibleIndexPaths = [[self.visibleIndexPaths sortedArrayUsingSelector: @selector(compare:)] mutableCopy];
-    if (self.visibleIndexPaths.lastObject.item == self.dateEventsModelsArray.count - 1) {
+    NSMutableArray<NSIndexPath *> *visibleIndexPaths = [[self.selectDayCollectionView indexPathsForVisibleItems] mutableCopy];
+    visibleIndexPaths = [[visibleIndexPaths sortedArrayUsingSelector: @selector(compare:)] mutableCopy];
+    if (visibleIndexPaths.lastObject.item == self.dateEventsModelsArray.count - 1) {
         [self fetchCalendarEvents:[[NSCalendar currentCalendar] dateByAddingUnit:NSCalendarUnitDay value:1 toDate:self.dateEventsModelsArray.lastObject.date options:0] weeksAmount:1];
     }
     [self.selectDayCollectionView reloadData];
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    [dateFormatter setLocale: [NSLocale localeWithLocaleIdentifier:[[NSLocale preferredLanguages] objectAtIndex:0]]];
-    [dateFormatter setDateFormat:@"d MMMM yyyy"];
-    self.title = [dateFormatter stringFromDate:self.dateEventsModelsArray[indexPath.item].date];
+    self.title = [self makeStringFromDateFormatter:self.dateEventsModelsArray[indexPath.item].date];
     self.dayEventViewManager.model = self.dateEventsModelsArray[indexPath.item];
     
     NSDateComponents *components = [[NSCalendar currentCalendar] components: NSCalendarUnitSecond | NSCalendarUnitMinute | NSCalendarUnitDay | NSCalendarUnitHour | NSCalendarUnitMonth | NSCalendarUnitYear | NSCalendarUnitWeekday fromDate:self.dateEventsModelsArray[indexPath.item].date];

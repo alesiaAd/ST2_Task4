@@ -9,6 +9,8 @@
 #import "TimeLabel.h"
 #import "UIColor+extensions.h"
 
+const CGFloat leadingMarging = 10.0;
+
 @implementation TimeLabel
 
 - (instancetype) initWithFrame:(CGRect)frame {
@@ -19,8 +21,8 @@
         self.timeLabel.translatesAutoresizingMaskIntoConstraints = NO;
         [self addSubview:self.timeLabel];
         [NSLayoutConstraint activateConstraints:@[
-                                                  [self.timeLabel.leadingAnchor constraintEqualToAnchor:self.safeAreaLayoutGuide.leadingAnchor constant:10],
-                                                  [self.timeLabel.trailingAnchor constraintEqualToAnchor:self.safeAreaLayoutGuide.trailingAnchor],
+                                                  [self.timeLabel.leadingAnchor constraintEqualToAnchor:self.leadingAnchor constant:leadingMarging],
+                                                  [self.timeLabel.trailingAnchor constraintEqualToAnchor:self.trailingAnchor],
                                                   [self.timeLabel.centerYAnchor constraintEqualToAnchor:self.centerYAnchor]
                                                   ]];
     }

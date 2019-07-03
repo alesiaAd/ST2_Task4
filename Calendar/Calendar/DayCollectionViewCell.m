@@ -9,6 +9,9 @@
 #import "DayCollectionViewCell.h"
 #import "UIColor+extensions.h"
 
+const CGFloat selectionViewDiameter = 50.0;
+const CGFloat dotViewDiameter = 5.0;
+
 @interface DayCollectionViewCell ()
 
 @property (strong, nonatomic) UIView *selectionView;
@@ -28,7 +31,6 @@
         self.selectionView.backgroundColor = [UIColor red];
         self.selectionView.hidden = YES;
         
-        const CGFloat selectionViewDiameter = 50.0;
         [NSLayoutConstraint activateConstraints:@[
                                                   [self.selectionView.centerXAnchor constraintEqualToAnchor:self.contentView.centerXAnchor],
                                                   [self.selectionView.centerYAnchor constraintEqualToAnchor:self.contentView.centerYAnchor constant:-5],
@@ -67,7 +69,6 @@
                                                   ]
          ];
         
-        const CGFloat dotViewDiameter = 5.0;
         self.dotView = [UIView new];
         self.dotView.translatesAutoresizingMaskIntoConstraints = NO;
         self.dotView.backgroundColor = [UIColor whiteColor];

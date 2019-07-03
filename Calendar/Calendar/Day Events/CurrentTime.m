@@ -9,6 +9,10 @@
 #import "CurrentTime.h"
 #import "UIColor+extensions.h"
 
+const CGFloat labelWidth = 50.0;
+const CGFloat labelLeadingMarging = 10.0;
+const CGFloat lineHeight = 2.0;
+
 @implementation CurrentTime
 
 - (instancetype) initWithFrame:(CGRect)frame {
@@ -19,8 +23,8 @@
         self.currentTimeLabel.translatesAutoresizingMaskIntoConstraints = NO;
         [self addSubview:self.currentTimeLabel];
         [NSLayoutConstraint activateConstraints:@[
-                                                  [self.currentTimeLabel.leadingAnchor constraintEqualToAnchor:self.safeAreaLayoutGuide.leadingAnchor constant:10],
-                                                  [self.currentTimeLabel.widthAnchor constraintEqualToConstant:50],
+                                                  [self.currentTimeLabel.leadingAnchor constraintEqualToAnchor:self.leadingAnchor constant:labelLeadingMarging],
+                                                  [self.currentTimeLabel.widthAnchor constraintEqualToConstant:labelWidth],
                                                   [self.currentTimeLabel.centerYAnchor constraintEqualToAnchor:self.centerYAnchor],
                                                   [self.currentTimeLabel.heightAnchor constraintEqualToAnchor:self.heightAnchor]
                                                   ]];
@@ -31,9 +35,9 @@
         [self addSubview:self.currentTimeLine];
         [NSLayoutConstraint activateConstraints:@[
                                                   [self.currentTimeLine.leadingAnchor constraintEqualToAnchor:self.currentTimeLabel.trailingAnchor],
-                                                  [self.currentTimeLine.trailingAnchor constraintEqualToAnchor:self.safeAreaLayoutGuide.trailingAnchor],
+                                                  [self.currentTimeLine.trailingAnchor constraintEqualToAnchor:self.trailingAnchor],
                                                   [self.currentTimeLine.centerYAnchor constraintEqualToAnchor:self.centerYAnchor],
-                                                  [self.currentTimeLine.heightAnchor constraintEqualToConstant:2]
+                                                  [self.currentTimeLine.heightAnchor constraintEqualToConstant:lineHeight]
                                                   ]];
     }
     return self;

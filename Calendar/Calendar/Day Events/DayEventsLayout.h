@@ -10,4 +10,6 @@
 
 @interface DayEventsLayout : UICollectionViewLayout
 
++ (CGFloat) yOffsetForDate:(NSDate *)date;
+
 @end

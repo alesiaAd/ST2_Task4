@@ -100,12 +100,17 @@ static const CGFloat cellSpacing = 6;
 
 - (UICollectionViewLayoutAttributes *)prepareCurrentTime {
     NSDate *currentTime = [NSDate date];
-    NSDateComponents *components = [[NSCalendar currentCalendar] components: NSCalendarUnitSecond | NSCalendarUnitMinute | NSCalendarUnitDay | NSCalendarUnitHour | NSCalendarUnitMonth | NSCalendarUnitYear | NSCalendarUnitWeekday fromDate:currentTime];
     UICollectionViewLayoutAttributes *attr = [UICollectionViewLayoutAttributes layoutAttributesForSupplementaryViewOfKind:NSStringFromClass(CurrentTime.class) withIndexPath:[NSIndexPath indexPathForItem:0 inSection:0]];
-        attr.frame = CGRectMake(0, gridLine15minsSpacing * components.hour * 4 + gridLine15minsSpacing * (components.minute / 15.0) - gridLine15minsSpacing / 2, self.collectionView.bounds.size.width, gridLine15minsSpacing);
-        [self.timeLabels addObject:attr];
+    attr.frame = CGRectMake(0, [DayEventsLayout yOffsetForDate:currentTime] - gridLine15minsSpacing / 2, self.collectionView.bounds.size.width, gridLine15minsSpacing);
+    [self.timeLabels addObject:attr];
     self.currentTime = attr;
     return self.currentTime;
+}
+
++ (CGFloat) yOffsetForDate:(NSDate *)date {
+    NSDateComponents *components = [[NSCalendar currentCalendar] components: NSCalendarUnitSecond | NSCalendarUnitMinute | NSCalendarUnitDay | NSCalendarUnitHour | NSCalendarUnitMonth | NSCalendarUnitYear | NSCalendarUnitWeekday fromDate:date];
+    CGFloat yOffset = gridLine15minsSpacing * components.hour * 4 + gridLine15minsSpacing * (components.minute / 15.0);
+    return yOffset;
 }
 
 - (NSMutableArray *)prepareEventItem {
