@@ -19,6 +19,8 @@ static const CGFloat padding = 5.0;
         
         self.nameLabel = [UILabel new];
         self.nameLabel.numberOfLines = 0;
+        self.nameLabel.font = [UIFont systemFontOfSize:17 weight:UIFontWeightMedium];
+        self.nameLabel.textColor = [UIColor blackColor];
         [self.nameLabel sizeToFit];
         self.nameLabel.translatesAutoresizingMaskIntoConstraints = NO;
         [self.contentView addSubview:self.nameLabel];

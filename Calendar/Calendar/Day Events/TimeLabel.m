@@ -7,13 +7,15 @@
 //
 
 #import "TimeLabel.h"
+#import "UIColor+extensions.h"
 
 @implementation TimeLabel
 
 - (instancetype) initWithFrame:(CGRect)frame {
     if (self = [super initWithFrame:frame]) {
         self.timeLabel = [UILabel new];
-        self.timeLabel.text = @"20.00";
+        self.timeLabel.font = [UIFont systemFontOfSize:15];
+        self.timeLabel.textColor = [UIColor grayDark];
         self.timeLabel.translatesAutoresizingMaskIntoConstraints = NO;
         [self addSubview:self.timeLabel];
         [NSLayoutConstraint activateConstraints:@[

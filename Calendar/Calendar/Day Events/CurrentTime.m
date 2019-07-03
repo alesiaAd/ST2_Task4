@@ -14,6 +14,8 @@
 - (instancetype) initWithFrame:(CGRect)frame {
     if (self = [super initWithFrame:frame]) {
         self.currentTimeLabel = [UILabel new];
+        self.currentTimeLabel.font = [UIFont systemFontOfSize:15];
+        self.currentTimeLabel.textColor = [UIColor grayDark];
         self.currentTimeLabel.translatesAutoresizingMaskIntoConstraints = NO;
         [self addSubview:self.currentTimeLabel];
         [NSLayoutConstraint activateConstraints:@[
